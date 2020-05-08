@@ -16,18 +16,18 @@ You can download the binaries directly from the [releases](https://github.com/Je
 
 ### From Source:
 
-HashiCorpVaultCredentialResolver requires JDK 1.8 or newer and Vault Java Driver (https://github.com/BetterCloud/vault-java-driver) 5.1 or newer.
-Import the project in Eclipse
-Add Mid.jar to Java Build Path
-As well as vault-java-driver.jar
-Export to JAR File
+* HashiCorpVaultCredentialResolver requires JDK 1.8 or newer and Vault Java Driver (https://github.com/BetterCloud/vault-java-driver) 5.1 or newer.
+* Import the project in Eclipse
+* Add Mid.jar to Java Build Path
+* As well as vault-java-driver.jar
+* Export to JAR File
 
 ## Running the tests
 
-Use a ServiceNow Instance with “External Credential Storage” plugin (com.snc.discovery.external_credentials) 
-Import above exported JAR file and vault-java-driver.jar to your ServiceNow instance. (MID Server - JAR Files)
-Create Credential in your instance with "External credential store" flag activated.
-Ensure that the "Credential ID" match a secret path in your Hashicorp credential store (ex: secret/mysecret)
+* Use a ServiceNow Instance with “External Credential Storage” plugin (com.snc.discovery.external_credentials) 
+* Import above exported JAR file and vault-java-driver.jar to your ServiceNow instance. (MID Server - JAR Files)
+* Create Credential in your instance with "External credential store" flag activated.
+* Ensure that the "Credential ID" match a secret path in your Hashicorp credential store (ex: secret/mysecret)
 
 ## Built With
 
