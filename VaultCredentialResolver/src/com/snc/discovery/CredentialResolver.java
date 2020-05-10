@@ -153,7 +153,6 @@ public class CredentialResolver {
 					
 					passphrase = vault.logical().read(id).getData().get("ssh_private_key");
 					
-					//System.out.println("### Successfully retrieved complex credential #### User : " + username + " #### " + password ); 
 					break;
 				
 				case "ibm": ; // softlayer_user, softlayer_key, bluemix_key
