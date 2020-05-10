@@ -28,6 +28,7 @@ You can download the binaries directly from the [releases](https://github.com/Je
 * Import above exported JAR file and vault-java-driver.jar to your ServiceNow instance. (MID Server - JAR Files)
 * Create Credential in your instance with "External credential store" flag activated.
 * Ensure that the "Credential ID" match a secret path in your Hashicorp credential store (ex: secret/mysecret)
+* Ensure that the secret in the Vault do contain key/pair matching the ServiceNow Credential record fields (ex: user_name, password)
 
 ## Built With
 
