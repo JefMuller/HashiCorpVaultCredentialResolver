@@ -8,15 +8,7 @@ import com.bettercloud.vault.VaultException;
 
 import com.service_now.mid.services.Config;
 
-/**
-* Credential Resolver class for Hashicorp Vault
-* Use Vault Java Driver (zero-dependency Java client for the Vault 
-* secrets management solution from HashiCorp)
-* 
-* @author  Jean-François (Jef) Muller
-* @version 0.5
-* @since   2020-05-10 
-*/
+
 public class CredentialResolver {
 
 	// These are the permissible names of arguments passed INTO the resolve()
@@ -71,7 +63,6 @@ public class CredentialResolver {
 	}
 
 	private void loadProps() {
-		
 		// Load Vault environment variable value
 		address = Config.get().getProperty("mid.external_credentials.vault.address");
     	if(isNullOrEmpty(address))
@@ -106,6 +97,8 @@ public class CredentialResolver {
 			
 			final Vault vault = new Vault(config);
 			
+			System.out.println("[Vault] INFO - Credential Type : " + type + " #### " );
+			System.out.println("[Vault] INFO - Credential Id : " + id + " #### " );
 			switch(type) {
 				// for below listed credential type , just retrieve user name and password 
 				case "windows":
@@ -116,17 +109,19 @@ public class CredentialResolver {
 				case "basic":
 				// Read operation
 					username = vault.logical().read(id).getData().get("user_name");
+					System.out.println("[Vault] INFO - Credential user_name : " + username + " #### " );
 					if(isNullOrEmpty(username)) {
-						System.err.println("[Vault] ERROR - user_name not set or invalid token!");
+						System.err.println("[Vault] ERROR - user_name not set!");
 						break;
 					}
 					
 					password = vault.logical().read(id).getData().get("password");
 					if(isNullOrEmpty(password)) {
-						System.err.println("[Vault] ERROR - user_name not set or invalid token!");
+						System.err.println("[Vault] ERROR - password not set!");
 						break;
 					}
 				
+					System.out.println("### Successfully retrieved credential #### User : " + username + " #### " + password ); 
 					break;
 				
 				// for below listed credential type , retrieve user name, password, ssh_passphrase, ssh_private_key
@@ -139,13 +134,13 @@ public class CredentialResolver {
 					// Read operation
 					username = vault.logical().read(id).getData().get("user_name");
 					if(isNullOrEmpty(username)) {
-						System.err.println("[Vault] ERROR - user_name not set or invalid token!");
+						System.err.println("[Vault] ERROR - user_name not set!");
 						break;
 					}
 					
 					password = vault.logical().read(id).getData().get("password");
 					if(isNullOrEmpty(password)) {
-						System.err.println("[Vault] ERROR - user_name not set or invalid token!");
+						System.err.println("[Vault] ERROR - password not set!");
 						break;
 					}
 					
@@ -153,7 +148,7 @@ public class CredentialResolver {
 					
 					passphrase = vault.logical().read(id).getData().get("ssh_private_key");
 					
-					break;
+					System.out.println("### Successfully retrieved credential #### User : " + username + " #### " + password ); break;
 				
 				case "ibm": ; // softlayer_user, softlayer_key, bluemix_key
 				case "aws": ; // access_key, secret_key
@@ -167,8 +162,8 @@ public class CredentialResolver {
 		} 
 		catch (VaultException e) {
 			// Catch block
-			System.err.println("### Unable to connect to Vault: " + address + " #### ");
 			//e.printStackTrace();
+			System.err.println("### Unable to connect to Vault: " + address + " #### ");
 		}
 		
 		// the resolved credential is returned in a HashMap...
@@ -177,6 +172,13 @@ public class CredentialResolver {
 		result.put(VAL_PSWD, password);
 		result.put(VAL_PKEY, private_key);
 		result.put(VAL_PASSPHRASE, passphrase);
+		
+		//result.put(VAL_AUTHPROTO, fProps.get(keyPrefix + VAL_AUTHPROTO));
+		//result.put(VAL_AUTHKEY, fProps.get(keyPrefix + VAL_AUTHKEY));
+		//result.put(VAL_PRIVPROTO, fProps.get(keyPrefix + VAL_PRIVPROTO));
+		//result.put(VAL_PRIVKEY, fProps.get(keyPrefix + VAL_PRIVKEY));
+
+		//System.err.println("Error while resolving credential id/type["+id+"/"+type+"]");
 
 		return result;
 	}
@@ -190,7 +192,7 @@ public class CredentialResolver {
 	 * Return the API version supported by this class.
 	 */
 	public String getVersion() {
-		return "0.5";
+		return "1.0";
 	}
 
 	public static void main(String[] args) {
