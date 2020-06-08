@@ -13,7 +13,7 @@ import com.service_now.mid.services.Config;
 * Use Vault Java Driver a community written zero-dependency Java client 
 *
 * @author  Jean-François (Jef) Muller
-* @version 0.5
+* @version 0.6
 * @since   2020-05-10 
 */
 public class CredentialResolver {
@@ -98,13 +98,14 @@ public class CredentialResolver {
 				case "jdbc":
 				case "jms": 
 				case "basic":
-					// Read operation
-					username = vault.logical().read(id).getData().get("user_name");
+					// Read operation 
+					// adjusted key to AD secret engine API
+					username = vault.logical().read(id).getData().get("username");
 					if(isNullOrEmpty(username)) {
-						System.err.println("[Vault] ERROR - user_name not set!");
+						System.err.println("[Vault] ERROR - username not set!");
 						break;
 					}
-					password = vault.logical().read(id).getData().get("password");
+					password = vault.logical().read(id).getData().get("current_password");
 					if(isNullOrEmpty(password)) {
 						System.err.println("[Vault] ERROR - password not set!");
 						break;
@@ -118,12 +119,12 @@ public class CredentialResolver {
 				case "infoblox": 
 				case "api_key":
 					// Read operation
-					username = vault.logical().read(id).getData().get("user_name");
+					username = vault.logical().read(id).getData().get("username");
 					if(isNullOrEmpty(username)) {
 						System.err.println("[Vault] ERROR - user_name not set!");
 						break;
 					}
-					password = vault.logical().read(id).getData().get("password");
+					password = vault.logical().read(id).getData().get("current_password");
 					if(isNullOrEmpty(password)) {
 						System.err.println("[Vault] ERROR - password not set!");
 						break;
@@ -133,6 +134,7 @@ public class CredentialResolver {
 					break;
 				case "ibm": ; // softlayer_user, softlayer_key, bluemix_key
 				case "aws": ; // access_key, secret_key
+				
 				case "azure": ; // tenant_id, client_id, auth_method, secret_key
 				case "gcp": ; // email , secret_key
 				default:
