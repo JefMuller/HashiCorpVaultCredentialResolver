@@ -13,8 +13,8 @@ import com.service_now.mid.services.Config;
 * Use Vault Java Driver a community written zero-dependency Java client 
 *
 * @author  Jean-François (Jef) Muller
-* @version 0.6
-* @since   2020-05-10 
+* @version 0.8
+* @since   2020-07-01 
 */
 public class CredentialResolver {
 
@@ -79,7 +79,7 @@ public class CredentialResolver {
 		String password = "";
 		String passphrase = "";
 		String private_key = "";
-		
+			
 		if(id.equalsIgnoreCase("misbehave"))
 			throw new RuntimeException("I've been a baaaaaaaaad CredentialResolver!");
 
@@ -98,14 +98,22 @@ public class CredentialResolver {
 				case "jdbc":
 				case "jms": 
 				case "basic":
-					// Read operation 
-					// adjusted key to AD secret engine API
-					username = vault.logical().read(id).getData().get("username");
+					if ( id.contains("ad/creds/") ) {
+						String role = id.substring(id.lastIndexOf("/")+1);
+						username = vault.activedirectory().getRole(role).getData().get("service_account_name"); // AD Secret
+					} else {
+						username = vault.logical().read(id).getData().get("username"); // Static Secret
+					}
 					if(isNullOrEmpty(username)) {
 						System.err.println("[Vault] ERROR - username not set!");
 						break;
 					}
-					password = vault.logical().read(id).getData().get("current_password");
+					if ( id.contains("ad/creds/") ) {
+						String role = id.substring(id.lastIndexOf("/"));
+						password = vault.activedirectory().creds(role).getData().get("current_password"); // AD Secret
+					} else {
+						password = vault.logical().read(id).getData().get("current_password"); // Static Secret
+					}
 					if(isNullOrEmpty(password)) {
 						System.err.println("[Vault] ERROR - password not set!");
 						break;
@@ -132,16 +140,25 @@ public class CredentialResolver {
 					passphrase = vault.logical().read(id).getData().get("ssh_passphrase");
 					private_key = vault.logical().read(id).getData().get("ssh_private_key");
 					break;
+				case "aws": ; // access_key, secret_key 	// AWS Support
+					username = vault.logical().read(id).getData().get("access_key");
+					if(isNullOrEmpty(username)) {
+						System.err.println("[Vault] ERROR - access_key not set!");
+						break;
+					}
+					password = vault.logical().read(id).getData().get("secret_key");
+					if(isNullOrEmpty(password)) {
+						System.err.println("[Vault] ERROR - secret_key not set!");
+						break;
+					}
+					break;
 				case "ibm": ; // softlayer_user, softlayer_key, bluemix_key
-				case "aws": ; // access_key, secret_key
-				
 				case "azure": ; // tenant_id, client_id, auth_method, secret_key
 				case "gcp": ; // email , secret_key
 				default:
 					System.err.println("[Vault] INFO - CredentialResolver, not implemented credential type!");
 					break;
 			}
-			
 		} 
 		catch (VaultException e) {
 			// Catch block
@@ -166,7 +183,7 @@ public class CredentialResolver {
 	 * Return the API version supported by this class.
 	 */
 	public String getVersion() {
-		return "0.5";
+		return "0.8";
 	}
 
 	public static void main(String[] args) {
