@@ -13,8 +13,8 @@ import com.service_now.mid.services.Config;
 * Use Vault Java Driver a community written zero-dependency Java client 
 *
 * @author  Jean-François (Jef) Muller
-* @version 0.8
-* @since   2020-07-01 
+* @version 0.9
+* @since   2020-09-09 
 */
 public class CredentialResolver {
 
