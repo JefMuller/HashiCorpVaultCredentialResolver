@@ -12,7 +12,7 @@ import com.service_now.mid.services.Config;
 * Credential Resolver for Vault secrets management solution from HashiCorp.
 * Use Vault Java Driver a community written zero-dependency Java client 
 *
-* @author  Jean-François (Jef) Muller
+* @author  Jean-FranÃ§ois (Jef) Muller
 * @version 0.8
 * @since   2020-07-01 
 */
@@ -133,10 +133,12 @@ public class CredentialResolver {
 						break;
 					}
 					password = vault.logical().read(id).getData().get("current_password");
+					/* Removed password empty check. Combination can be username + ssh_private_key (only)
 					if(isNullOrEmpty(password)) {
 						System.err.println("[Vault] ERROR - password not set!");
 						break;
 					}
+					*/
 					passphrase = vault.logical().read(id).getData().get("ssh_passphrase");
 					private_key = vault.logical().read(id).getData().get("ssh_private_key");
 					break;
