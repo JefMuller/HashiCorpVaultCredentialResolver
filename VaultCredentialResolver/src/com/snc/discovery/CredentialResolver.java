@@ -129,7 +129,7 @@ public class CredentialResolver {
 					// Read operation
 					username = vault.logical().read(id).getData().get("username");
 					if(isNullOrEmpty(username)) {
-						System.err.println("[Vault] ERROR - user_name not set!");
+						System.err.println("[Vault] ERROR - username not set!");
 						break;
 					}
 					password = vault.logical().read(id).getData().get("current_password");
